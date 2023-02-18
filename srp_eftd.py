@@ -36,7 +36,7 @@ def test_run():
     correct_cnt = 0
     correctness_dist = []
     
-    max_samples = 10000
+    max_samples = 200000
     tp = 0
     tn = 0
     fp = 0

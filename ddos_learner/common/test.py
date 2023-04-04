@@ -6,7 +6,7 @@ from river import metrics
 
 def load_model(path, model_timestamp):
     if model_timestamp is None:
-        model_path = min(glob.iglob(f'{path}/*.pickle'), key=os.path.getctime)
+        model_path = max(glob.iglob(f'{path}/*.pickle'), key=os.path.getctime)
         model_timestamp = re.search(r"model_([0-9]+)\.pickle", model_path).group(1)
     else:
         model_path = f"{path}/model_{model_timestamp}.pickle"
@@ -26,12 +26,12 @@ def write_results(path, timestamp, N, acc, prec, recl, f1):
         f.write(f'F1: {f1.get()}\n')
 
 
-def test(dataset, N:int, subpath:str, timestamp: None):    
+def test(dataset, N:int, subpath:str, timestamp= None):    
 
     model_path=f'models/{subpath}'
     (model, timestamp) = load_model(model_path, timestamp)
 
-    
+    print(timestamp)
 
     acc= metrics.Accuracy()
     prec= metrics.Precision()

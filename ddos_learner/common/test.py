@@ -4,11 +4,12 @@ import pickle
 import re
 from river import metrics
 
-def load_model(path):
-    model_path = min(glob.iglob(f'{path}/*.pickle'), key=os.path.getctime)
-    model=None
-
-    model_timestamp = re.search(r"model_([0-9]+)\.pickle", model_path).group(1)
+def load_model(path, model_timestamp):
+    if model_timestamp is None:
+        model_path = min(glob.iglob(f'{path}/*.pickle'), key=os.path.getctime)
+        model_timestamp = re.search(r"model_([0-9]+)\.pickle", model_path).group(1)
+    else:
+        model_path = f"{path}/model_{model_timestamp}.pickle"
     with open(model_path, 'rb') as f:
         model=pickle.load(f)
     return (model, model_timestamp)
@@ -25,10 +26,10 @@ def write_results(path, timestamp, N, acc, prec, recl, f1):
         f.write(f'F1: {f1.get()}\n')
 
 
-def test(dataset, N:int, subpath:str):    
+def test(dataset, N:int, subpath:str, timestamp: None):    
 
     model_path=f'models/{subpath}'
-    (model, timestamp) = load_model(model_path)
+    (model, timestamp) = load_model(model_path, timestamp)
 
     
 
@@ -39,7 +40,7 @@ def test(dataset, N:int, subpath:str):
     i = 0
     try:
         for (X, Y) in dataset:
-            i += 0
+            i += 1
             if i >= N:
                 break;
             Yp = model.predict_one(X)

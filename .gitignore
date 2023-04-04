@@ -1,3 +1,7 @@
 *.csv*
 *.zip
 .ipynb_checkpoints
+**.pickle
+**.png
+**__pycache__
+**.txt

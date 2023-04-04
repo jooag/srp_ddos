@@ -1,0 +1,12 @@
+--- Training running time: 495.676838 seconds ---
+last accuracy: 0.6132306615330767
+last precision: 0.4559028469042405
+last recall: 0.668710760694992
+last f1: 0.5421722403077833
+##################### TEST #################################
+TEST 1000
+n_samples tested:1000
+test accuracy: 0.906
+test precision: 0.9356846473029046
+test recall: 0.9657387580299786
+test f1: 0.9504741833508956

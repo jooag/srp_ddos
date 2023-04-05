@@ -19,6 +19,6 @@ Dependencies are:
 - Try new base estimators: other trees, SVM's (?), NN's (?), etc.
 - Try to consume dataset by windows: it may be useful to extract features of windows (by time or number of packets). It's faster and may be more accurate.
 
-> Next meeting at: 05/04/2023
+> Next meeting at: 12/04/2023
 
 > Next presentation at: 26/04/2023

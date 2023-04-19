@@ -22,3 +22,6 @@ Dependencies are:
 > Next meeting at: 12/04/2023
 
 > Next presentation at: 26/04/2023
+
+> Interesting article: https://ieeexplore.ieee.org/document/6488798
+> Interesting: 

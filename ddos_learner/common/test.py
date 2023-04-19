@@ -26,33 +26,40 @@ def write_results(path, timestamp, N, acc, prec, recl, f1):
         f.write(f'F1: {f1.get()}\n')
 
 
-def test(dataset, N:int, subpath:str, timestamp= None):    
+def test(dataset, N:int, subpath:str='default', model=None, timestamp=None, save=True):    
+    if model is None:
+        model_path=f'models/{subpath}'
+        (model, timestamp) = load_model(model_path, timestamp)
 
-    model_path=f'models/{subpath}'
-    (model, timestamp) = load_model(model_path, timestamp)
-
-    print(timestamp)
-
+    
     acc= metrics.Accuracy()
     prec= metrics.Precision()
     recl= metrics.Recall()
     f1= metrics.F1()
-    i = 0
-    try:
+    i = 0   
+    done = False
+    while not done:
         for (X, Y) in dataset:
             i += 1
             if i >= N:
+                done = True
                 break;
+
             Yp = model.predict_one(X)
             
             acc.update(Y, Yp)
             prec.update(Y, Yp)
             recl.update(Y, Yp)
             f1.update(Y, Yp)
-
-            if i % 100 == 0:
-                print(f"At {i}")
-    except StopIteration as e:
-        print(f"Stopped after {i} iterations. Dataset too small.")
-    res_path=f'test_results/{subpath}'
-    write_results(res_path, timestamp, N, acc, prec, recl, f1)
+            if save:
+                if i % 100 == 0:
+                    print(f"At {i}")
+                    
+        if not done:
+            print("Test dataset reached end. Resetting.")
+            dataset.reset()
+    
+    if save:        
+        res_path=f'test_results/{subpath}'
+        write_results(res_path, timestamp, N, acc, prec, recl, f1)
+    return (acc, prec, recl, f1)

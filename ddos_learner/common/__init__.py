@@ -11,4 +11,5 @@ class Dataset():
     def __iter__(self):
         pass;
 
-    
+    def reset(self):
+        pass;

@@ -41,7 +41,7 @@ def test(dataset, N:int, subpath:str='default', model=None, timestamp=None, save
     while not done:
         for (X, Y) in dataset:
             i += 1
-            if i >= N:
+            if N > 0 and i >= N:
                 done = True
                 break;
 
@@ -54,10 +54,12 @@ def test(dataset, N:int, subpath:str='default', model=None, timestamp=None, save
             if save:
                 if i % 100 == 0:
                     print(f"At {i}")
-                    
-        if not done:
+        
+        if not done and N > 0:
             print("Test dataset reached end. Resetting.")
             dataset.reset()
+        else:
+            done = True
     
     if save:        
         res_path=f'test_results/{subpath}'

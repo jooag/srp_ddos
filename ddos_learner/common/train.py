@@ -45,7 +45,7 @@ def plot_stats(plot_path, idx, timestamp, acc_hist, prec_hist, recl_hist, f1_his
 
 def train(model, dataset , test_dataset, N:int, step_size:int = 100, subpath:str='default' ):    
     
-    print("Training initiated. ")
+    print("Training initiated... ")
 
     it = iter(dataset)
 
@@ -54,11 +54,12 @@ def train(model, dataset , test_dataset, N:int, step_size:int = 100, subpath:str
     recl_hist = np.empty(N//step_size)
     f1_hist = np.empty(N//step_size)
     i = 0
-
-    try:
+    done = False
+    while not done:
         for (X, Y) in dataset:
             i += 1
-            if i >= N:
+            if N > 0 and i >= N:
+                done = True
                 break;
             Yp = model.predict_one(X)     
 
@@ -66,7 +67,8 @@ def train(model, dataset , test_dataset, N:int, step_size:int = 100, subpath:str
 
             if i%step_size == 0:
                 print(f"At {i}.")
-                (acc, prec, recl, f1) = test(test_dataset, 0.05*N, model=model, save=False)
+                test_dataset.reset()
+                (acc, prec, recl, f1) = test(test_dataset, -1, model=model, save=False)
 
                 acc_hist[i//step_size] = acc.get()
                 prec_hist[i//step_size] = prec.get()
@@ -74,9 +76,12 @@ def train(model, dataset , test_dataset, N:int, step_size:int = 100, subpath:str
                 f1_hist[i//step_size] = f1.get()
                 print(f"Acc: {acc.get():.8f}. Prec: {prec.get():.8f}.\nRecl: {recl.get():.8f}. F1: {f1.get():.8f}")
 
-    except StopIteration as e:
-        print(f'Stopped after {i} iterations. Dataset too small.')
-    
+        if not done and N > 0:
+            print("Resetting dataset.")
+            dataset.reset()
+        else:
+            done = True
+
     timestamp = int((datetime.now() - datetime(1970, 1, 1)).total_seconds())
 
     model_path = f'models/{subpath}'

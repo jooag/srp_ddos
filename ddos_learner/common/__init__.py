@@ -1,4 +1,4 @@
-from .train import train
+from .train import train, load_stats, plot_stats
 from .test import test
 
 

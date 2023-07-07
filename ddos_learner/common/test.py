@@ -31,7 +31,7 @@ def test(dataset, N:int, subpath:str='default', model=None, timestamp=None, save
         model_path=f'models/{subpath}'
         (model, timestamp) = load_model(model_path, timestamp)
 
-    
+    dataset.reset()
     acc= metrics.Accuracy()
     prec= metrics.Precision()
     recl= metrics.Recall()

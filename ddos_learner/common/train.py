@@ -8,6 +8,7 @@ import os
 import glob
 import re
 from datetime import datetime
+import pandas as pd
 
 def save_model(model, path, timestamp):
 
@@ -25,8 +26,8 @@ def save_stats(path, idx, timestamp, acc, prec, recl, f1, lb, timest, qnt_hist):
     if not os.path.exists(path):        
         os.makedirs(path)
 
-    with open(f'{path}/model_{timestamp}.pickle', 'wb') as f:
-        pickle.dump({'idx':idx, 'timestamp': timestamp, 'acc':acc, 'prec':prec, 'recl':recl, 'f1':f1, 'lb':lb, 'timest':timest, 'qnt':qnt_hist}, f)
+    df = pd.DataFrame.from_dict({'idx':idx, 'timestamp': timestamp, 'acc':acc, 'prec':prec, 'recl':recl, 'f1':f1, 'lb':lb, 'timest':timest, 'qnt':qnt_hist})
+    df.to_csv(f'{path}/{timestamp}.csv', index=False)   
 
 def load_stats(path, timestamp=None):
     if timestamp is None:
@@ -64,7 +65,7 @@ def plot_stats(plot_path, idx, timestamp, acc, prec, recl, f1, lb, timest, qnt):
     fig.savefig(f'{plot_path}/Flow.png', dpi=500)
 
 
-def train(model, dataset , test_dataset, N:int, step_size:int = 100, subpath:str='default' ):    
+def train(model, dataset , N:int, step_size:int = 100, subpath:str='default' ):    
     
     print("Training initiated... ")
 
@@ -97,9 +98,10 @@ def train(model, dataset , test_dataset, N:int, step_size:int = 100, subpath:str
             train_start = time()
             if i%step_size == 0:
                 print(f"At {i}.")
-                test_dataset.reset()
-                (acc, prec, recl, f1) = test(test_dataset, 100000, model=model, save=False)
-
+                dataset.reset(i)
+                (acc, prec, recl, f1) = test(dataset, step_size*4, model=model, save=False)
+                
+                dataset.reset(i)
                 acc_hist[i//step_size] = acc.get()
                 prec_hist[i//step_size] = prec.get()
                 recl_hist[i//step_size] = recl.get()

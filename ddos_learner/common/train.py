@@ -11,7 +11,6 @@ from datetime import datetime
 import pandas as pd
 
 def save_model(model, path, timestamp):
-
     
 
     if not os.path.exists(path):
@@ -40,7 +39,9 @@ def load_stats(path, timestamp=None):
     return (stats, timestamp)
 
 
-def plot_stats(plot_path, idx, timestamp, acc, prec, recl, f1, lb, timest, qnt):
+def plot_stats(plot_path, idx, timestamp, acc, prec, recl, f1, lb, timest, qnt):    
+    if isinstance(timestamp, list):
+        timestamp=timestamp[0]
     plot_path=f'{plot_path}/{timestamp}'
     if not os.path.exists(plot_path):
         os.makedirs(plot_path)    
@@ -49,10 +50,12 @@ def plot_stats(plot_path, idx, timestamp, acc, prec, recl, f1, lb, timest, qnt):
         fig, ax = plt.subplots(figsize=(5, 5))
         fig.tight_layout()
 
-        ax.plot(idx, data)
-        ax.plot(idx, lb, color='red', marker='o', linewidth=.5, ms=.5)
-        ax.set_ylim(0, 1)
+        ax.plot(idx, data, color='blue', marker='o', linewidth=1, markersize=1, label=name)        
+        ax.plot(idx, lb, color='red', marker='o', linewidth=.5, ms=.5, label='Ratio of attacks')
+        ax.set_ylim(0, 1)        
         ax.set_title(name)
+        ax.set_xlabel('Number of packets')
+        ax.legend()
         
         fig.savefig(f'{plot_path}/{name}.png', dpi=500)
 
@@ -63,6 +66,7 @@ def plot_stats(plot_path, idx, timestamp, acc, prec, recl, f1, lb, timest, qnt):
     ax.set_title("Flow")
     
     fig.savefig(f'{plot_path}/Flow.png', dpi=500)
+    plt.close(fig)
 
 
 def train(model, dataset , N:int, step_size:int = 100, subpath:str='default' ):    

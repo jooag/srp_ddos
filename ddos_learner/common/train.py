@@ -71,13 +71,13 @@ def train(model, dataset , N:int, step_size:int = 100, subpath:str='default' ):
 
     it = iter(dataset)
 
-    acc_hist = np.empty(N//step_size)
-    prec_hist = np.empty(N//step_size)
-    recl_hist = np.empty(N//step_size)
-    f1_hist = np.empty(N//step_size)
-    lb_hist = np.empty(N//step_size)
-    timest_hist=np.empty(N//step_size)
-    qnt_hist=np.empty(N//step_size)    
+    acc_hist = np.empty(N//step_size + 1)
+    prec_hist = np.empty(N//step_size + 1)
+    recl_hist = np.empty(N//step_size + 1)
+    f1_hist = np.empty(N//step_size + 1)
+    lb_hist = np.empty(N//step_size + 1)
+    timest_hist=np.empty(N//step_size + 1)
+    qnt_hist=np.empty(N//step_size + 1)    
     start_time=time()
 
     lb=0

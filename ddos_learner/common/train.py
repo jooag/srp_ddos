@@ -1,6 +1,7 @@
 import numpy as np
 from river import utils, metrics
 from .test import test
+from .plot import plot_stats
 import matplotlib.pyplot as plt
 from time import time
 import pickle
@@ -39,34 +40,6 @@ def load_stats(path, timestamp=None):
     return (stats, timestamp)
 
 
-def plot_stats(plot_path, idx, timestamp, acc, prec, recl, f1, lb, timest, qnt):    
-    if isinstance(timestamp, list):
-        timestamp=timestamp[0]
-    plot_path=f'{plot_path}/{timestamp}'
-    if not os.path.exists(plot_path):
-        os.makedirs(plot_path)    
-    
-    for (name, data) in zip(['Accuracy', 'Precision', 'Recall', 'F1 Score'], [acc, prec, recl, f1]):
-        fig, ax = plt.subplots(figsize=(5, 5))
-        fig.tight_layout()
-
-        ax.plot(idx, data, color='blue', marker='o', linewidth=1, markersize=1, label=name)        
-        ax.plot(idx, lb, color='red', marker='o', linewidth=.5, ms=.5, label='Ratio of attacks')
-        ax.set_ylim(0, 1)        
-        ax.set_title(name)
-        ax.set_xlabel('Number of packets')
-        ax.legend()
-        
-        fig.savefig(f'{plot_path}/{name}.png', dpi=500)
-
-    fig, ax = plt.subplots(figsize=(5, 5))
-    fig.tight_layout()
-
-    ax.plot(timest, qnt)    
-    ax.set_title("Flow")
-    
-    fig.savefig(f'{plot_path}/Flow.png', dpi=500)
-    plt.close(fig)
 
 
 def train(model, dataset , N:int, step_size:int = 100, subpath:str='default' ):    

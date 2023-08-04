@@ -1,5 +1,13 @@
 # DDoS detection using Machine Learning
-This project intends to detect **DDoS attacks** with **machine learning** techniques. Currently, **Stream Random Patches** with **Hoeffding Trees** are being explored.
+Repository of code related to article "Applying Hoeffding Tree Algorithms for Effective
+Stream Learning in IoT DDoS Detection", submitted to the IEEE Latincom 2023. Authors are:
+- João Gabriel Andrade de Araujo Josephik
+- Yaissa Siqueira
+- Kétly Gonçalves Machado
+- Routo Terada
+- Aldri Luiz dos Santos
+- Michele Nogueira
+- Daniel Macedo Batista
 
 Dependencies are:
 
@@ -9,19 +17,10 @@ Dependencies are:
 
 > pandas==1.5.3
 
-## Next steps
 
-- Change plotting: calculate statistics in all data used in training so far
-- Change shuffling: it's interesting to keep data in its real order. It may worsen the results, but it's closer to the real word situation
-- Try AdaCost: to be able to assign misclassification costs may improve results.
-- Try no ensemble: are the ensembles doing anything?
-- Run new models on older datasets. It's importante to have data for comparison.
-- Try new base estimators: other trees, SVM's (?), NN's (?), etc.
-- Try to consume dataset by windows: it may be useful to extract features of windows (by time or number of packets). It's faster and may be more accurate.
+To replicate the experiments:
 
-> Next meeting at: 12/04/2023
-
-> Next presentation at: 26/04/2023
-
-> Interesting article: https://ieeexplore.ieee.org/document/6488798
-> Interesting: 
+1. Download the TON_IoT "Processed Network" dataset, avaliable in <https://cloudstor.aarnet.edu.au/plus/s/ds5zW91vdgjEj9i?path=%2FProcessed_datasets%2FProcessed_Network_dataset>. Save the csv files at "ton/dataset/raw".
+2. Run all the cells in "ton/dataset/dataset_selection.ipynb". This will create "ton/dataset/train_data.csv", which will be used by the models.
+3. Run all the cells in "ton/train_and_test.ipynb". This may take several hours. Data will be saved at stats/\<model_name\>/\<timestamp\>.csv and plots will be saved at plots/\<model_name\>/\<timestamp\>.csv.
+4. To get the mean and standard deviation of the metrics, run the cells at "ton/results_analysis.ipynb".

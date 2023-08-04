@@ -21,12 +21,12 @@ def save_model(model, path, timestamp):
     with open(f'{path}/model_{timestamp}.pickle', 'wb') as f:
         pickle.dump(model, f)
 
-def save_stats(path, idx, timestamp, acc, prec, recl, f1, lb, timest, qnt_hist):
+def save_stats(path, idx, timestamp, acc, prec_attack, recl_attack, prec_normal, recl_normal, f1, lb, timest, qnt_hist):
 
     if not os.path.exists(path):        
         os.makedirs(path)
 
-    df = pd.DataFrame.from_dict({'idx':idx, 'timestamp': timestamp, 'acc':acc, 'prec':prec, 'recl':recl, 'f1':f1, 'lb':lb, 'timest':timest, 'qnt':qnt_hist})
+    df = pd.DataFrame.from_dict({'idx':idx, 'timestamp': timestamp, 'acc':acc, 'prec_attack':prec_attack, 'recl_attack':recl_attack, 'prec_normal':prec_normal, 'recl_normal':recl_normal, 'f1':f1, 'lb':lb, 'timest':timest, 'qnt':qnt_hist})
     df.to_csv(f'{path}/{timestamp}.csv', index=False)   
 
 def load_stats(path, timestamp=None):
@@ -49,8 +49,10 @@ def train(model, dataset , N:int, step_size:int = 100, subpath:str='default' ):
     it = iter(dataset)
 
     acc_hist = np.empty(N//step_size + 1)
-    prec_hist = np.empty(N//step_size + 1)
-    recl_hist = np.empty(N//step_size + 1)
+    prec_attack_hist = np.empty(N//step_size + 1)
+    recl_attack_hist = np.empty(N//step_size + 1)
+    prec_normal_hist = np.empty(N//step_size + 1)
+    recl_normal_hist = np.empty(N//step_size + 1)
     f1_hist = np.empty(N//step_size + 1)
     lb_hist = np.empty(N//step_size + 1)
     timest_hist=np.empty(N//step_size + 1)
@@ -76,12 +78,14 @@ def train(model, dataset , N:int, step_size:int = 100, subpath:str='default' ):
             if i%step_size == 0:
                 print(f"At {i}.")
                 dataset.reset(i)
-                (acc, prec, recl, f1) = test(dataset, step_size*4, model=model, save=False)
+                (acc, prec_attack, recl_attack, prec_normal, recl_normal, f1) = test(dataset, step_size*4, model=model)
                 
                 dataset.reset(i)
                 acc_hist[i//step_size] = acc.get()
-                prec_hist[i//step_size] = prec.get()
-                recl_hist[i//step_size] = recl.get()
+                prec_attack_hist[i//step_size] = prec_attack.get()
+                recl_attack_hist[i//step_size] = recl_attack.get()
+                prec_normal_hist[i//step_size] = prec_normal.get()
+                recl_normal_hist[i//step_size] = recl_normal.get()
                 f1_hist[i//step_size] = f1.get()
 
                 
@@ -89,7 +93,7 @@ def train(model, dataset , N:int, step_size:int = 100, subpath:str='default' ):
                 timest_hist[i//step_size] = time() - start_time
                 qnt_hist[i//step_size] = i
                 lb = 0
-                print(f"Acc: {acc.get():.8f}. Prec: {prec.get():.8f}.\nRecl: {recl.get():.8f}. F1: {f1.get():.8f}. LB: {lb_hist[i//step_size]:.8f}")
+                print(f"Acc: {acc.get():.8f}. Prec(Attack): {prec_attack.get():.8f}.\nRecl (Attack): {recl_attack.get():.8f}. Prec(Normal): {prec_normal.get():.8f}.\nRecl (Normal): {recl_normal.get():.8f}. F1: {f1.get():.8f}. LB: {lb_hist[i//step_size]:.8f}")
             start_time += time() - train_start
         if not done and N > 0:
             print("Resetting dataset.")
@@ -107,11 +111,11 @@ def train(model, dataset , N:int, step_size:int = 100, subpath:str='default' ):
 
     idx=np.arange(1, N, step_size)
 
-    save_stats(stats_path, idx, timestamp, acc_hist, prec_hist, recl_hist, f1_hist, lb_hist, timest_hist, qnt_hist)    
+    save_stats(stats_path, idx, timestamp, acc_hist, prec_attack_hist, recl_attack_hist, prec_normal_hist, recl_normal_hist, f1_hist, lb_hist, timest_hist, qnt_hist)    
 
     plot_path=f'plots/{subpath}'
 
-    plot_stats(plot_path, idx, timestamp, acc_hist, prec_hist, recl_hist, f1_hist, lb_hist, timest_hist, qnt_hist)
+    plot_stats(plot_path, idx, timestamp, acc_hist, prec_attack_hist, recl_attack_hist, prec_normal_hist, recl_normal_hist, f1_hist, lb_hist, timest_hist, qnt_hist)
 
 
 

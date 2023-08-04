@@ -14,30 +14,23 @@ def load_model(path, model_timestamp):
         model=pickle.load(f)
     return (model, model_timestamp)
 
-def write_results(path, timestamp, N, acc, prec, recl, f1):
-    if not os.path.exists(path):
-        os.makedirs(path)
-    with open(f'{path}/test_res_{timestamp}.txt', 'w') as f:
-        f.write('TEST RESULT\n')
-        f.write(f'# of samples: {N}\n')
-        f.write(f'Accuracy: {acc.get()}\n')
-        f.write(f'Precision: {prec.get()}\n')
-        f.write(f'Recall: {recl.get()}\n')
-        f.write(f'F1: {f1.get()}\n')
 
 
-def test(dataset, N:int, subpath:str='default', model=None, timestamp=None, save=True):    
+
+def test(dataset, N:int, subpath:str='default', model=None, timestamp=None):    
     if model is None:
         model_path=f'models/{subpath}'
         (model, timestamp) = load_model(model_path, timestamp)
-
-    dataset.reset()
+   
     acc= metrics.Accuracy()
-    prec= metrics.Precision()
-    recl= metrics.Recall()
+    prec_attack= metrics.Precision()
+    recl_attack= metrics.Recall()
+    prec_normal= metrics.Precision()
+    recl_normal= metrics.Recall()
     f1= metrics.F1()
     i = 0   
     done = False
+    ind = dataset.ind
     while not done:
         for (X, Y) in dataset:
             i += 1
@@ -48,20 +41,17 @@ def test(dataset, N:int, subpath:str='default', model=None, timestamp=None, save
             Yp = model.predict_one(X)
             
             acc.update(Y, Yp)
-            prec.update(Y, Yp)
-            recl.update(Y, Yp)
+            prec_attack.update(Y, Yp)
+            recl_attack.update(Y, Yp)
+            prec_normal.update(Y + 1 % 2, Yp + 1 % 2)
+            recl_normal.update(Y + 1 % 2, Yp + 1 % 2)
             f1.update(Y, Yp)
-            if save:
-                if i % 100 == 0:
-                    print(f"At {i}")
+      
         
         if not done and N > 0:
             print("Test dataset reached end. Resetting.")
-            dataset.reset()
+            dataset.reset(ind)
         else:
             done = True
     
-    if save:        
-        res_path=f'test_results/{subpath}'
-        write_results(res_path, timestamp, N, acc, prec, recl, f1)
-    return (acc, prec, recl, f1)
+    return (acc, prec_attack, recl_attack, prec_normal, recl_normal, f1)

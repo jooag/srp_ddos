@@ -6,31 +6,32 @@ import numpy as np
 from shutil import rmtree
 
 
-def regenerate_plots():
+def regenerate_plots():    
     for subpath in os.listdir('stats'):
         for timestamp in os.listdir(f'stats/{subpath}'):            
             print(f"{subpath}/{timestamp}")
             df = pd.read_csv(f'stats/{subpath}/{timestamp}')
             timestamp=int(timestamp.replace('.csv', ''))
-            rmtree(f'plots/{subpath}/{timestamp}')            
+            if os.path.exists(f'plots/{subpath}/{timestamp}'):
+                rmtree(f'plots/{subpath}/{timestamp}')            
             plot_stats(f"plots/{subpath}", **df.to_dict('list'))
 
 
-def plot_stats(plot_path, idx, timestamp, acc, prec, recl, f1, lb, timest, qnt):    
+def plot_stats(plot_path, idx, timestamp, acc, prec_attack, recl_attack, prec_normal, recl_normal, f1, lb, timest, qnt):    
     if isinstance(timestamp, list):
         timestamp=timestamp[0]
     plot_path=f'{plot_path}/{timestamp}'
     if not os.path.exists(plot_path):
         os.makedirs(plot_path)    
     
-    for (name, data) in zip(['Accuracy', 'Precision', 'Recall', 'F1-Score'], [acc, prec, recl, f1]):
+    for (name, data) in zip(['Accuracy', 'Precision(Attack)', 'Recall(Attack)' , 'Precision(Normal)', 'Recall(Normal)', 'F1-Score'], [acc, prec_attack, recl_attack, prec_normal, recl_normal, f1]):
         fig, ax = plt.subplots(figsize=(5, 5))
         
         fig.tight_layout(pad=2.5)
         ax.plot(idx, data, color='blue', marker='o', linewidth=1, markersize=1, label=name)        
         ax.plot(idx, lb, color='red', marker='o', linewidth=.5, ms=.5, label='Ratio of attacks')
         ax.set_ylim(0, 1)        
-        ax.set_title(name)
+        # ax.set_title(name)
         ax.set_xlabel('Number of packets')
         ax.set_ylabel(name)
         ax.legend(loc='lower left', bbox_to_anchor=(0, 0))

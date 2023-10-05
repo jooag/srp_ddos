@@ -16,3 +16,12 @@ class Dataset():
     def reset(self):
         pass;
 
+class DummyPredictor:
+    def __init__(self, label=1):
+        self.label=label
+    
+    def learn_one(self,  x, y):
+        pass
+
+    def predict_one(self, x):
+        return self.label
